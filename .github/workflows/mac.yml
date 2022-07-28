@@ -1,0 +1,116 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Mac release
+
+# Controls when the workflow will run
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  OPENSSL_VER: 1.1.1m
+  OPENSSL_INSTALL_DIR: /usr/local/openssl
+  INSTALL_DIR: ${{ github.workspace }}/../python-3.9.10-nogil
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: macos-12
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Remove non-universal libraries
+        run: brew unlink gettext xz
+    
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it      
+      - uses: actions/checkout@v3
+
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+      
+      - run: |
+          echo "/usr/lib/ccache" >>"${GITHUB_PATH}"
+          echo "/usr/local/opt/ccache/libexec" >>"${GITHUB_PATH}"
+
+#       - uses: actions/cache@v3
+#         id: cache-openssl
+#         with:
+#           path: ${{ env.OPENSSL_INSTALL_DIR }}
+#           key: ${{ runner.os }}-openssl-${{ env.OPENSSL_VER }}@1
+
+#       - name: Build OpenSSL
+#         if: steps.cache-openssl.outputs.cache-hit != 'true'
+#         uses: ./.github/workflows/openssl-mac
+#         with:
+#           version: ${{ env.OPENSSL_VER }}
+#           prefix: ${{ env.OPENSSL_INSTALL_DIR }}
+#           build_dir: ${{ github.workspace }}/../openssl-universal
+
+      - name: Build XZ
+        uses: ./.github/workflows/xz-mac
+
+#       - uses: actions/cache@v3
+#         id: cache-configured
+#         with:
+#           key: cache-configured@4
+#           path: |
+#             Makefile
+#             Makefile.pre
+#             Misc/python-config.sh
+#             Misc/python-embed.pc
+#             Misc/python.pc
+#             Modules/Setup.local
+#             Modules/config.c
+#             Modules/ld_so_aix
+#             config.cache
+#             config.log
+#             config.status
+#             pyconfig.h
+          
+#       - name: configure
+#         if: steps.cache-configured.outputs.cache-hit != 'true'
+#         run: |
+#           ./configure -C \
+#             --enable-universalsdk=/ \
+#             --with-universal-archs=universal2 \
+#             --with-computed-gotos \
+#             --with-openssl=${OPENSSL_INSTALL_DIR} \
+#             --with-ensurepip \
+#             --prefix=
+      
+#       - name: build
+#         run: |
+#           echo $PATH
+#           make -j
+        
+#       - name: install
+#         run: |
+#           make install DESTDIR="${INSTALL_DIR}"
+#           cp ${OPENSSL_INSTALL_DIR}/lib/* ${INSTALL_DIR}/lib/
+#           install_name_tool -change /usr/local/lib/libssl.1.1.dylib "@loader_path/../../libssl.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_ssl.nogil-39b-darwin.so
+#           install_name_tool -change /usr/local/lib/libcrypto.1.1.dylib "@loader_path/../../libcrypto.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_ssl.nogil-39b-darwin.so
+#           install_name_tool -change /usr/local/lib/libssl.1.1.dylib "@loader_path/../../libssl.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_hashlib.nogil-39b-darwin.so
+#           install_name_tool -change /usr/local/lib/libcrypto.1.1.dylib "@loader_path/../../libcrypto.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_hashlib.nogil-39b-darwin.so
+#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/2to3-3.9
+#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/idle3.9
+#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/pydoc3.9
+#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/python3.9-config
+#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/pip3.9
+#           rm ${INSTALL_DIR}/bin/python3-intel64
+#           rm ${INSTALL_DIR}/bin/python3.9-intel64
+#           rm ${INSTALL_DIR}/bin/pip3
+#           ln -s pip3.9 ${INSTALL_DIR}/bin/pip3
+#           ln -s pip3.9 ${INSTALL_DIR}/bin/pip
+#           ln -s python3.9 ${INSTALL_DIR}/bin/python
+#           tar czf python-3.9.10-nogil-macos.tar.gz -C ${INSTALL_DIR}/.. $(basename $INSTALL_DIR)
+      
+#       - uses: actions/upload-artifact@v3
+#         with:
+#           name: python-3.9.10-nogil-macos.tar.gz
+#           path: python-3.9.10-nogil-macos.tar.gz
+
+        
+            
+          
