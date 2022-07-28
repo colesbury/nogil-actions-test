@@ -37,19 +37,19 @@ jobs:
           echo "/usr/lib/ccache" >>"${GITHUB_PATH}"
           echo "/usr/local/opt/ccache/libexec" >>"${GITHUB_PATH}"
 
-#       - uses: actions/cache@v3
-#         id: cache-openssl
-#         with:
-#           path: ${{ env.OPENSSL_INSTALL_DIR }}
-#           key: ${{ runner.os }}-openssl-${{ env.OPENSSL_VER }}@1
+      - uses: actions/cache@v3
+        id: cache-openssl
+        with:
+          path: ${{ env.OPENSSL_INSTALL_DIR }}
+          key: ${{ runner.os }}-openssl-${{ env.OPENSSL_VER }}@1
 
-#       - name: Build OpenSSL
-#         if: steps.cache-openssl.outputs.cache-hit != 'true'
-#         uses: ./.github/workflows/openssl-mac
-#         with:
-#           version: ${{ env.OPENSSL_VER }}
-#           prefix: ${{ env.OPENSSL_INSTALL_DIR }}
-#           build_dir: ${{ github.workspace }}/../openssl-universal
+      - name: Build OpenSSL
+        if: steps.cache-openssl.outputs.cache-hit != 'true'
+        uses: ./.github/workflows/openssl-mac
+        with:
+          version: ${{ env.OPENSSL_VER }}
+          prefix: ${{ env.OPENSSL_INSTALL_DIR }}
+          build_dir: ${{ github.workspace }}/openssl-universal
 
       - uses: actions/cache@v3
         id: cache-xz
@@ -58,70 +58,72 @@ jobs:
           key: ${{ runner.os }}-xz-${{ env.XZ_VERSION }}
 
       - name: Build XZ
+        if: steps.cache-xz.outputs.cache-hit != 'true'
         uses: ./.github/workflows/xz-mac
         with:
           prefix: ${{ env.XZ_INSTALL_DIR  }}
           version: ${{ env.XZ_VERSION  }}
 
-#       - uses: actions/cache@v3
-#         id: cache-configured
-#         with:
-#           key: cache-configured@4
-#           path: |
-#             Makefile
-#             Makefile.pre
-#             Misc/python-config.sh
-#             Misc/python-embed.pc
-#             Misc/python.pc
-#             Modules/Setup.local
-#             Modules/config.c
-#             Modules/ld_so_aix
-#             config.cache
-#             config.log
-#             config.status
-#             pyconfig.h
+      - uses: actions/cache@v3
+        id: cache-configured
+        with:
+          key: cache-configured@5
+          path: |
+            Makefile
+            Makefile.pre
+            Misc/python-config.sh
+            Misc/python-embed.pc
+            Misc/python.pc
+            Modules/Setup.local
+            Modules/config.c
+            Modules/ld_so_aix
+            config.cache
+            config.log
+            config.status
+            pyconfig.h
           
-#       - name: configure
-#         if: steps.cache-configured.outputs.cache-hit != 'true'
-#         run: |
-#           ./configure -C \
-#             --enable-universalsdk=/ \
-#             --with-universal-archs=universal2 \
-#             --with-computed-gotos \
-#             --with-openssl=${OPENSSL_INSTALL_DIR} \
-#             --with-ensurepip \
-#             --prefix=
+      - name: configure
+        if: steps.cache-configured.outputs.cache-hit != 'true'
+        run: |
+          ./configure -C \
+            --enable-universalsdk=/ \
+            --with-universal-archs=universal2 \
+            --with-computed-gotos \
+            --with-openssl=${OPENSSL_INSTALL_DIR} \
+            --with-ensurepip \
+            LDFLAGS="-g -L${{ env.XZ_INSTALL_DIR }}/lib" \
+            CFLAGS="-g -I${{ env.XZ_INSTALL_DIR }}/include" \
+            --prefix=
       
-#       - name: build
-#         run: |
-#           echo $PATH
-#           make -j
+      - name: build
+        run: |
+          make -j
         
-#       - name: install
-#         run: |
-#           make install DESTDIR="${INSTALL_DIR}"
-#           cp ${OPENSSL_INSTALL_DIR}/lib/* ${INSTALL_DIR}/lib/
-#           install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libssl.1.1.dylib "@loader_path/../../libssl.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_ssl.nogil-39b-darwin.so
-#           install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libcrypto.1.1.dylib "@loader_path/../../libcrypto.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_ssl.nogil-39b-darwin.so
-#           install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libssl.1.1.dylib "@loader_path/../../libssl.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_hashlib.nogil-39b-darwin.so
-#           install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libcrypto.1.1.dylib "@loader_path/../../libcrypto.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_hashlib.nogil-39b-darwin.so
-#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/2to3-3.9
-#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/idle3.9
-#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/pydoc3.9
-#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/python3.9-config
-#           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/pip3.9
-#           rm ${INSTALL_DIR}/bin/python3-intel64
-#           rm ${INSTALL_DIR}/bin/python3.9-intel64
-#           rm ${INSTALL_DIR}/bin/pip3
-#           ln -s pip3.9 ${INSTALL_DIR}/bin/pip3
-#           ln -s pip3.9 ${INSTALL_DIR}/bin/pip
-#           ln -s python3.9 ${INSTALL_DIR}/bin/python
-#           tar czf python-3.9.10-nogil-macos.tar.gz -C ${INSTALL_DIR}/.. $(basename $INSTALL_DIR)
+      - name: install
+        run: |
+          make install DESTDIR="${INSTALL_DIR}"
+          cp ${OPENSSL_INSTALL_DIR}/lib/* ${INSTALL_DIR}/lib/
+          install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libssl.1.1.dylib "@loader_path/../../libssl.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_ssl.nogil-39b-darwin.so
+          install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libcrypto.1.1.dylib "@loader_path/../../libcrypto.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_ssl.nogil-39b-darwin.so
+          install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libssl.1.1.dylib "@loader_path/../../libssl.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_hashlib.nogil-39b-darwin.so
+          install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/libcrypto.1.1.dylib "@loader_path/../../libcrypto.1.1.dylib" ${INSTALL_DIR}/lib/python3.9/lib-dynload/_hashlib.nogil-39b-darwin.so
+          ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/2to3-3.9
+          ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/idle3.9
+          ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/pydoc3.9
+          ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/python3.9-config
+          ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/pip3.9
+          rm ${INSTALL_DIR}/bin/python3-intel64
+          rm ${INSTALL_DIR}/bin/python3.9-intel64
+          rm ${INSTALL_DIR}/bin/pip3
+          ln -s pip3.9 ${INSTALL_DIR}/bin/pip3
+          ln -s pip3.9 ${INSTALL_DIR}/bin/pip
+          ln -s python3.9 ${INSTALL_DIR}/bin/python
+          tar czf python-3.9.10-nogil-macos.tar.gz -C ${INSTALL_DIR}/.. $(basename $INSTALL_DIR)
       
-#       - uses: actions/upload-artifact@v3
-#         with:
-#           name: python-3.9.10-nogil-macos.tar.gz
-#           path: python-3.9.10-nogil-macos.tar.gz
+      - uses: actions/upload-artifact@v3
+        with:
+          name: python-3.9.10-nogil-macos.tar.gz
+          path: python-3.9.10-nogil-macos.tar.gz
 
         
             
