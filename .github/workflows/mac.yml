@@ -101,8 +101,8 @@ jobs:
       - name: install
         run: |
           make install DESTDIR="${INSTALL_DIR}"
-          cp ${OPENSSL_INSTALL_DIR}/lib/* ${INSTALL_DIR}/lib/
           for dep in libssl.1.1.dylib libcrypto.1.1.dylib; do
+            cp ${OPENSSL_INSTALL_DIR}/lib/$dep ${INSTALL_DIR}/lib/
             for sharedlib in _ssl _hashlib; do
               install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/${dep} "@loader_path/../../${dep}" ${INSTALL_DIR}/lib/python3.9/lib-dynload/${sharedlib}*.so
             done
