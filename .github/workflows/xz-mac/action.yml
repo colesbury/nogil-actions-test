@@ -5,8 +5,8 @@ inputs:
     default: 5.2.5
   sha256sum:
     default: f6f4910fd033078738bd82bfba4f49219d03b17eb0794eb91efbae419f4aba10
-  install_dir:
-    default: ${{ github.workspace }}/../xz
+  prefix:
+    default: ${{ github.workspace }}/../lib/xz
 
 runs:
   using: "composite"
@@ -24,6 +24,6 @@ runs:
       shell: bash
       run: |
         cd xz-${{ inputs.version }}
-        ./configure --prefix=/usr/local --enable-static --disable-shared --disable-dependency-tracking
+        ./configure --prefix=${{  inputs.prefix  }} --enable-static --disable-shared --disable-dependency-tracking CFLAGS="-mmacosx-version-min=10.9 -arch arm64 -arch x86_64" LDFLAGS="-mmacosx-version-min=10.9 -arch arm64 -arch x86_64"
         make -j
         make install

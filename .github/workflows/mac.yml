@@ -9,8 +9,10 @@ on:
 
 env:
   OPENSSL_VER: 1.1.1m
-  OPENSSL_INSTALL_DIR: /usr/local/openssl
+  LIB_DIR: ${{ github.workspace }}/../lib
+  OPENSSL_INSTALL_DIR: ${{ github.workspace }}/../lib/openssl
   INSTALL_DIR: ${{ github.workspace }}/../python-3.9.10-nogil
+  XZ_VERSION: 5.2.5
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -48,8 +50,17 @@ jobs:
 #           prefix: ${{ env.OPENSSL_INSTALL_DIR }}
 #           build_dir: ${{ github.workspace }}/../openssl-universal
 
+      - uses: actions/cache@v3
+        id: cache-xz
+        with:
+          path: ${{ env.LIB_DIR  }}/xz
+          key: ${{ runner.os }}-xz-${{ env.XZ_VERSION }}
+
       - name: Build XZ
         uses: ./.github/workflows/xz-mac
+        with:
+          prefix: ${{ env.LIB_DIR  }}/xz
+          version: ${{ env.XZ_VERSION  }}
 
 #       - uses: actions/cache@v3
 #         id: cache-configured
