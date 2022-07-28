@@ -66,8 +66,8 @@ runs:
         ln -s libcrypto.1.1.dylib lib/libcrypto.dylib
         mv arm64/${{ inputs.prefix }}/include/ include/
         rm -r arm64 x86_64
-        mkdir -p $(basename "${{ inputs.prefix  }}")
-        cp -r ${{ inputs.build_dir }} ${{ inputs.prefix }}
+        mkdir -p ${{ inputs.prefix  }}
+        cp -r ${{ inputs.build_dir }}/ ${{ inputs.prefix }}
         popd
         tar czf ${{ runner.temp }}/openssl-universal.tar.gz -C ${{ inputs.build_dir }} .
     - uses: actions/upload-artifact@v3
