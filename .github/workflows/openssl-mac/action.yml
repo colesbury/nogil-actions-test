@@ -54,22 +54,23 @@ runs:
         make depend
         make all -j
         make install_sw DESTDIR=${{ inputs.build_dir }}/x86_64
-    # - name: Create fat binary
-    #   shell: bash
-    #   run: |
-    #     mkdir -p ${{ inputs.build_dir }}/lib
-    #     pushd ${{ inputs.build_dir }}
-    #     for libname in libssl.1.1.dylib libcrypto.1.1.dylib; do
-    #       lipo -create -output lib/$libname  arm64/${{  inputs.prefix  }}/lib/$libname  x86_64/${{  inputs.prefix  }}/lib/$libname
-    #     done
-    #     ln -s libssl.1.1.dylib lib/libssl.dylib
-    #     ln -s libcrypto.1.1.dylib lib/libcrypto.dylib
-    #     mv arm64/${{ inputs.prefix }}/include/ include/
-    #     rm -r arm64 x86_64
-    #     sudo cp -r ${{ inputs.build_dir }} ${{ inputs.prefix }}
-    #     popd
-    #     tar czf ${{ runner.temp }}/openssl-universal.tar.gz -C ${{ inputs.build_dir }} .
-    # - uses: actions/upload-artifact@v3
-    #   with:
-    #     name: openssl-universal.tar.gz
-    #     path: ${{ runner.temp }}/openssl-universal.tar.gz
+    - name: Create fat binary
+      shell: bash
+      run: |
+        mkdir -p ${{ inputs.build_dir }}/lib
+        pushd ${{ inputs.build_dir }}
+        for libname in libssl.1.1.dylib libcrypto.1.1.dylib; do
+          lipo -create -output lib/$libname  arm64/${{  inputs.prefix  }}/lib/$libname  x86_64/${{  inputs.prefix  }}/lib/$libname
+        done
+        ln -s libssl.1.1.dylib lib/libssl.dylib
+        ln -s libcrypto.1.1.dylib lib/libcrypto.dylib
+        mv arm64/${{ inputs.prefix }}/include/ include/
+        rm -r arm64 x86_64
+        mkdir -p $(basename "${{ inputs.prefix  }}")
+        cp -r ${{ inputs.build_dir }} ${{ inputs.prefix }}
+        popd
+        tar czf ${{ runner.temp }}/openssl-universal.tar.gz -C ${{ inputs.build_dir }} .
+    - uses: actions/upload-artifact@v3
+      with:
+        name: openssl-universal.tar.gz
+        path: ${{ runner.temp }}/openssl-universal.tar.gz
