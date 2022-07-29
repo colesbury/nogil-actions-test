@@ -3,6 +3,10 @@ name: Windows release
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      debug:
+        type: boolean
+        default: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -22,6 +26,7 @@ jobs:
           variant: sccache
 
       - name: Setup tmate session
+        if: ${{ github.event.inputs.debug }}
         uses: mxschmitt/action-tmate@v3
         with:
           limit-access-to-actor: true
