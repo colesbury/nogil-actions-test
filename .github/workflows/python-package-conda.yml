@@ -1,10 +1,10 @@
 name: Does tmate work on ubuntu?
 
-on: [push]
+on: [workflow_dispatch]
 
 jobs:
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
