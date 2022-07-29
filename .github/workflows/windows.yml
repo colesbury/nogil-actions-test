@@ -19,6 +19,11 @@ jobs:
       - name: ccache
         uses: hendrikmuhs/ccache-action@v1.2
 
-      - name: build
+      - name: build MSI
         run: |
-          PCbuild\build.bat -e -p x64
+          .\Tools\msi\buildnogil.bat -x64
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: python-3.9.10-amd64.exe
+          path: PCBuild/amd64/en-us/python-3.9.10-amd64.exe
