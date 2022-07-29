@@ -26,7 +26,7 @@ jobs:
           variant: sccache
 
       - name: Setup tmate session
-        if: ${{ github.event.inputs.debug }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug }}
         uses: mxschmitt/action-tmate@v3
         with:
           limit-access-to-actor: true
