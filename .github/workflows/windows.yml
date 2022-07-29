@@ -21,6 +21,11 @@ jobs:
         with:
           variant: sccache
 
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
+
       - name: build MSI
         run: |
           .\Tools\msi\buildnogil.bat -x64
