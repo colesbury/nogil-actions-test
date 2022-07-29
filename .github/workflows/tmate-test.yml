@@ -3,11 +3,17 @@ name: Does tmate work on ubuntu?
 on: [workflow_dispatch]
 
 jobs:
-  build-linux:
+  build:
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        variant: sccache
+
     - name: Setup tmate session
       uses: mxschmitt/action-tmate@v3
       with:
