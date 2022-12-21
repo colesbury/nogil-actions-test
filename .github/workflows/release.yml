@@ -15,8 +15,7 @@ jobs:
     secrets: inherit
 
   build:
-    #needs: [mac, windows]
-    needs: [mac]
+    needs: [mac, windows]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v3
