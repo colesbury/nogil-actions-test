@@ -7,6 +7,11 @@ on:
       debug:
         type: boolean
         default: false
+  workflow_call:
+    inputs:
+      debug:
+        type: boolean
+        default: false
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
