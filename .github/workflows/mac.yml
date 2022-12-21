@@ -100,9 +100,13 @@ jobs:
           make install DESTDIR="${INSTALL_DIR}"
           for dep in libssl.1.1.dylib libcrypto.1.1.dylib; do
             cp ${OPENSSL_INSTALL_DIR}/lib/$dep ${INSTALL_DIR}/lib/
+            install_name_tool -id "@loader_path/${dep}" "${INSTALL_DIR}/lib/$dep"
             for sharedlib in _ssl _hashlib; do
               install_name_tool -change ${OPENSSL_INSTALL_DIR}/lib/${dep} "@loader_path/../../${dep}" ${INSTALL_DIR}/lib/python3.9/lib-dynload/${sharedlib}*.so
             done
+          done
+          for dep in libcrypto.1.1.dylib; do
+            install_name_tool -change "${OPENSSL_INSTALL_DIR}/lib/${dep}" "@loader_path/${dep}" ${INSTALL_DIR}/lib/libssl.1.1.dylib
           done
           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/2to3-3.9
           ./.github/workflows/fix-header.sh ${INSTALL_DIR}/bin/idle3.9
