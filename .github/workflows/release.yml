@@ -10,9 +10,9 @@ jobs:
     uses: ./.github/workflows/mac.yml
     secrets: inherit
 
-  #windows:
-  #  uses: ./.github/workflows/windows.yml
-  #  secrets: inherit
+  windows:
+    uses: ./.github/workflows/windows.yml
+    secrets: inherit
 
   build:
     #needs: [mac, windows]
@@ -23,13 +23,13 @@ jobs:
         with:
           name: python-3.9.10-nogil-macos.tar.gz
 
-      #- uses: actions/download-artifact@v3
-      #  with:
-      #    name: python-3.9.10-amd64.exe
+      - uses: actions/download-artifact@v3
+        with:
+          name: python-3.9.10-amd64.exe
 
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             python-3.9.10-nogil-macos.tar.gz
-            #python-3.9.10-amd64.exe
+            python-3.9.10-amd64.exe
