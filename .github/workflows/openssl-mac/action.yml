@@ -33,7 +33,7 @@ runs:
       run: |
         cp -r openssl-${{ inputs.version }} arm64
         cd arm64
-        perl Configure darwin64-arm64-cc no-idea no-mdc2 no-rc5 no-zlib no-ssl3 shared --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.prefix }}
+        perl Configure darwin64-arm64-cc no-idea no-mdc2 no-rc5 no-zlib no-ssl3 shared --prefix=${{ inputs.prefix }} --openssldir=/private/etc/ssl
         make depend
         make all -j
         make install_sw DESTDIR=${{ inputs.build_dir }}/arm64
@@ -50,7 +50,7 @@ runs:
       run: |
         cp -r openssl-${{ inputs.version }} x86_64
         cd x86_64
-        perl Configure darwin64-x86_64-cc enable-ec_nistp_64_gcc_128 no-idea no-mdc2 no-rc5 no-zlib no-ssl3 shared --prefix=${{ inputs.prefix }} --openssldir=${{ inputs.prefix }}
+        perl Configure darwin64-x86_64-cc enable-ec_nistp_64_gcc_128 no-idea no-mdc2 no-rc5 no-zlib no-ssl3 shared --prefix=${{ inputs.prefix }} --openssldir=/private/etc/ssl
         make depend
         make all -j
         make install_sw DESTDIR=${{ inputs.build_dir }}/x86_64
