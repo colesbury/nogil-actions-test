@@ -7,11 +7,11 @@ on:
 
 jobs:
   mac:
-    uses: colesbury/nogil-actions-test/.github/workflows/mac.yml@main
+    uses: colesbury/nogil-actions-test/.github/workflows/mac.yml@nogil
     secrets: inherit
 
   windows:
-    uses: colesbury/nogil-actions-test/.github/workflows/windows.yml@main
+    uses: colesbury/nogil-actions-test/.github/workflows/windows.yml@nogil
     secrets: inherit
 
   build:
