@@ -7,26 +7,30 @@ on:
 
 jobs:
   mac:
-    uses: colesbury/nogil-actions-test/.github/workflows/mac.yml@nogil
+    uses: ${{ github.action_path }}/.github/workflows/mac.yml@${{ github.action_ref }}
     secrets: inherit
 
-  windows:
-    uses: colesbury/nogil-actions-test/.github/workflows/windows.yml@nogil
-    secrets: inherit
+  #windows:
+  #  uses: ${{ github.action_path }}/.github/workflows/windows.yml@${{ github.action_ref }}
+  #  secrets: inherit
 
   build:
-    needs: [mac, windows]
+    #needs: [mac, windows]
+    needs: [mac]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
-          name: artifact
-          path: dist
+          name: python-3.9.10-nogil-macos.tar.gz
+
+      - uses: actions/download-artifact@v3
+
+      - name: Display structure of downloaded files
+        run: ls -R
 
       - name: Release
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            Release.txt
-            LICENSE
+            python-3.9.10-nogil-macos.tar.gz
+            #python-3.9.10-amd64.exe
