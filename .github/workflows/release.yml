@@ -23,10 +23,9 @@ jobs:
         with:
           name: python-3.9.10-nogil-macos.tar.gz
 
-      - uses: actions/download-artifact@v3
-
-      - name: Display structure of downloaded files
-        run: ls -R
+      #- uses: actions/download-artifact@v3
+      #  with:
+      #    name: python-3.9.10-amd64.exe
 
       - name: Release
         uses: softprops/action-gh-release@v1
