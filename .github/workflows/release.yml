@@ -7,11 +7,11 @@ on:
 
 jobs:
   mac:
-    uses: ${{ github.action_path }}/.github/workflows/mac.yml@${{ github.ref_name }}
+    uses: ./.github/workflows/mac.yml
     secrets: inherit
 
   #windows:
-  #  uses: ${{ github.action_path }}/.github/workflows/windows.yml@${{ github.ref_name }}
+  #  uses: ./.github/workflows/windows.yml
   #  secrets: inherit
 
   build:
